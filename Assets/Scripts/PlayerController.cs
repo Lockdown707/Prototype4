@@ -10,12 +10,15 @@ public class PlayerController : MonoBehaviour
     public bool hasPowerup;
     private float powerupStrength = 15.0f;
     public GameObject powerupIndicator;
+    public ParticleSystem powerupParticle;
+    
 
     // Start is called before the first frame update
     void Start()
     {
        playerRb = GetComponent<Rigidbody>();
         focalPoint = GameObject.Find("Focal Point");
+        powerupParticle = GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -24,6 +27,7 @@ public class PlayerController : MonoBehaviour
         float forwardInput = Input.GetAxis("Vertical");
         playerRb.AddForce(focalPoint.transform.forward * speed * forwardInput);
         powerupIndicator.transform.position = transform.position + new Vector3(0, 1.5f, 0);
+        powerupParticle.transform.position = transform.position + new Vector3(0, 0, 0);
     }
     private void OnTriggerEnter(Collider other)
     {
@@ -33,6 +37,7 @@ public class PlayerController : MonoBehaviour
             powerupIndicator.gameObject.SetActive(true);
             Destroy(other.gameObject);
             StartCoroutine(PowerupCountdownRoutine());
+            powerupParticle.Play();
         }
     }
 
@@ -41,6 +46,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(7);
         hasPowerup = false;
         powerupIndicator.gameObject.SetActive(false);
+        powerupParticle.Stop();
     }
     private void OnCollisionEnter(Collision collision)
     {
